@@ -147,9 +147,9 @@ class RowMatrix : public Matrix<T> {
    * @throws OUT_OF_RANGE if either index is out of range
    */
   T GetElement(int i, int j) const override {
-    if (i < 0 || i >= this->rows_ || j < 0 || j >= this->cols_)
+    if (i < 0 || i >= this->rows_ || j < 0 || j >= this->cols_){
       throw Exception(ExceptionType::OUT_OF_RANGE, "Void Get Element: index is out of range.");
-
+    }
     return data_[i][j];
   }
 
@@ -164,9 +164,9 @@ class RowMatrix : public Matrix<T> {
    * @throws OUT_OF_RANGE if either index is out of range
    */
   void SetElement(int i, int j, T val) override {
-    if (i < 0 || i >= this->rows_ || j < 0 || j >= this->cols_)
+    if (i < 0 || i >= this->rows_ || j < 0 || j >= this->cols_){
       throw Exception(ExceptionType::OUT_OF_RANGE, "Void Get Element: index is out of range.");
-
+    }
     data_[i][j] = val;
   }
 
@@ -183,10 +183,13 @@ class RowMatrix : public Matrix<T> {
    */
   void FillFrom(const std::vector<T> &source) override {
     int size = source.size();
-    if (size != this->cols_ * this->rows_)
+    if (size != this->cols_ * this->rows_){
       throw Exception(ExceptionType::OUT_OF_RANGE, "source does not contain the required number of elements");
+    }
 
-    for (int i = 0; i < size; ++i) this->linear_[i] = source[i];
+    for (int i = 0; i < size; ++i) {
+      this->linear_[i] = source[i];
+    }
   }
 
   /**
