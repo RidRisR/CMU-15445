@@ -15,7 +15,7 @@
 #include <list>
 #include <mutex>  // NOLINT
 #include <vector>
-#include<unordered_map>
+#include <unordered_map>
 
 #include "buffer/replacer.h"
 #include "common/config.h"
@@ -49,8 +49,12 @@ class LRUReplacer : public Replacer {
 
  private:
   // TODO(student): implement me!
-  size_t pageSlotList; 
-  std::unordered_map<frame_id_t,size_t> pageDict;
+  
+  std::mutex mtx;
+
+  std::list<frame_id_t> victimList = std::list<frame_id_t>();
+
+  std::unordered_map<frame_id_t, std::list<frame_id_t>::iterator> pageLocator = std::unordered_map<frame_id_t,std::list<frame_id_t>::iterator>();
 };
 
 }  // namespace bustub

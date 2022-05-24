@@ -16,20 +16,35 @@
 
 namespace bustub {
 
-LRUReplacer::LRUReplacer(size_t num_pages) {
-    this->pageSlotList = 0;
+LRUReplacer::LRUReplacer(size_t num_pages) {};
+
+LRUReplacer::~LRUReplacer() {};
+
+bool LRUReplacer::Victim(frame_id_t *frame_id) { 
+    std::lock_guard<std::mutex> lock(mtx);
+
+    return false; 
 }
 
-LRUReplacer::~LRUReplacer() = default;
-
-bool LRUReplacer::Victim(frame_id_t *frame_id) { return false; }
-
 void LRUReplacer::Pin(frame_id_t frame_id) {
-    cleanBit(this->pageSlotList,pageDict[frame_id]);
+    std::lock_guard<std::mutex> lock(mtx);
+    auto pair = pageLocator.find(frame_id);
+    if(pair == pageLocator.end()){
+        return;
+    }
+
+    victimList.erase(pair->second);
+    pageLocator.erase(pair);
 }
 
 void LRUReplacer::Unpin(frame_id_t frame_id) {
-    setBit(this->pageSlotList,pageDict[frame_id]);
+    std::lock_guard<std::mutex> lock(mtx);
+    if (pageLocator.count(frame_id) != 0) {
+        return;
+    }
+
+    victimList.emplace_back(frame_id);
+    pageLocator.emplace(frame_id,victimList.begin());
 }
 
 size_t LRUReplacer::Size() { return 0; }
