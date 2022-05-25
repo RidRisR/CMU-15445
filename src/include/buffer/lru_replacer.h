@@ -52,9 +52,11 @@ class LRUReplacer : public Replacer {
   
   std::mutex mtx;
 
-  std::list<frame_id_t> victimList = std::list<frame_id_t>();
+  size_t capacity;
 
-  std::unordered_map<frame_id_t, std::list<frame_id_t>::iterator> pageLocator = std::unordered_map<frame_id_t,std::list<frame_id_t>::iterator>();
+  std::list<frame_id_t> victimList;
+
+  std::unordered_map<frame_id_t, std::list<frame_id_t>::iterator> pageLocator;
 };
 
 }  // namespace bustub

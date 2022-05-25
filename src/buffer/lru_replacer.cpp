@@ -16,37 +16,46 @@
 
 namespace bustub {
 
-LRUReplacer::LRUReplacer(size_t num_pages) {};
+LRUReplacer::LRUReplacer(size_t num_pages):capacity(num_pages) {};
 
 LRUReplacer::~LRUReplacer() {};
 
 bool LRUReplacer::Victim(frame_id_t *frame_id) { 
     std::lock_guard<std::mutex> lock(mtx);
-
-    return false; 
+    if (victimList.empty()) {
+        return false;
+    }
+    
+    *frame_id = victimList.back();
+    pageLocator.erase(*frame_id);
+    victimList.pop_back();
+    return true; 
 }
 
 void LRUReplacer::Pin(frame_id_t frame_id) {
     std::lock_guard<std::mutex> lock(mtx);
-    auto pair = pageLocator.find(frame_id);
-    if(pair == pageLocator.end()){
+    if (pageLocator.count(frame_id) == 0)
+    {
         return;
     }
+    
+    victimList.erase(pageLocator[frame_id]);
+    pageLocator.erase(frame_id);
 
-    victimList.erase(pair->second);
-    pageLocator.erase(pair);
 }
 
 void LRUReplacer::Unpin(frame_id_t frame_id) {
     std::lock_guard<std::mutex> lock(mtx);
-    if (pageLocator.count(frame_id) != 0) {
+    if (pageLocator.count(frame_id) != 0 || Size() >= capacity) {
         return;
     }
 
-    victimList.emplace_back(frame_id);
-    pageLocator.emplace(frame_id,victimList.begin());
+    victimList.push_front(frame_id);
+    pageLocator[frame_id]=victimList.begin();
 }
 
-size_t LRUReplacer::Size() { return 0; }
+size_t LRUReplacer::Size() { 
+    return victimList.size(); 
+}
 
 }  // namespace bustub
