@@ -121,6 +121,10 @@ class BufferPoolManagerInstance : public BufferPoolManager {
    */
   void ValidatePageId(page_id_t page_id) const;
 
+  void updatePage_locked(Page &p, page_id_t page_id);
+
+  frame_id_t replacePage_locked(page_id_t page_id, Page* &newPage);
+
   /** Number of pages in the buffer pool. */
   const size_t pool_size_;
   /** How many instances are in the parallel BPM (if present, otherwise just 1 BPI) */
