@@ -14,12 +14,11 @@
 
 #include <list>
 #include <mutex>  // NOLINT
-#include <vector>
 #include <unordered_map>
+#include <vector>
 
 #include "buffer/replacer.h"
 #include "common/config.h"
-
 
 namespace bustub {
 
@@ -49,14 +48,14 @@ class LRUReplacer : public Replacer {
 
  private:
   // TODO(student): implement me!
-  
-  std::mutex mtx;
 
-  size_t capacity;
+  std::mutex mtx_;
 
-  std::list<frame_id_t> victimList;
+  size_t capacity_;
 
-  std::unordered_map<frame_id_t, std::list<frame_id_t>::iterator> pageLocator;
+  std::list<frame_id_t> victim_list_;
+
+  std::unordered_map<frame_id_t, std::list<frame_id_t>::iterator> page_locator_;
 };
 
 }  // namespace bustub

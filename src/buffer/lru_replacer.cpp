@@ -11,51 +11,47 @@
 //===----------------------------------------------------------------------===//
 
 #include "buffer/lru_replacer.h"
-#define setBit(x,y) x|=(1<<y) //将X的第Y位置1
-#define cleanBit(x,y) x&=~(1<<y) //将X的第Y位清0
+#define setBit(x, y) x |= (1 << (y))
+#define cleanBit(x, y) x &= ~(1 << (y))
 
 namespace bustub {
 
-LRUReplacer::LRUReplacer(size_t num_pages):capacity(num_pages) {};
+LRUReplacer::LRUReplacer(size_t num_pages) : capacity_(num_pages) {}
 
-LRUReplacer::~LRUReplacer() {};
+LRUReplacer::~LRUReplacer() = default;
 
-bool LRUReplacer::Victim(frame_id_t *frame_id) { 
-    std::lock_guard<std::mutex> lock(mtx);
-    if (victimList.empty()) {
-        return false;
-    }
-    
-    *frame_id = victimList.back();
-    pageLocator.erase(*frame_id);
-    victimList.pop_back();
-    return true; 
+bool LRUReplacer::Victim(frame_id_t *frame_id) {
+  std::lock_guard<std::mutex> lock(mtx_);
+  if (victim_list_.empty()) {
+    return false;
+  }
+
+  *frame_id = victim_list_.back();
+  page_locator_.erase(*frame_id);
+  victim_list_.pop_back();
+  return true;
 }
 
 void LRUReplacer::Pin(frame_id_t frame_id) {
-    std::lock_guard<std::mutex> lock(mtx);
-    if (pageLocator.count(frame_id) == 0)
-    {
-        return;
-    }
-    
-    victimList.erase(pageLocator[frame_id]);
-    pageLocator.erase(frame_id);
+  std::lock_guard<std::mutex> lock(mtx_);
+  if (page_locator_.count(frame_id) == 0) {
+    return;
+  }
 
+  victim_list_.erase(page_locator_[frame_id]);
+  page_locator_.erase(frame_id);
 }
 
 void LRUReplacer::Unpin(frame_id_t frame_id) {
-    std::lock_guard<std::mutex> lock(mtx);
-    if (pageLocator.count(frame_id) != 0 || Size() >= capacity) {
-        return;
-    }
+  std::lock_guard<std::mutex> lock(mtx_);
+  if (page_locator_.count(frame_id) != 0 || Size() >= capacity_) {
+    return;
+  }
 
-    victimList.push_front(frame_id);
-    pageLocator[frame_id]=victimList.begin();
+  victim_list_.push_front(frame_id);
+  page_locator_[frame_id] = victim_list_.begin();
 }
 
-size_t LRUReplacer::Size() { 
-    return victimList.size(); 
-}
+size_t LRUReplacer::Size() { return victim_list_.size(); }
 
 }  // namespace bustub
