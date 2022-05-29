@@ -121,7 +121,7 @@ class BufferPoolManagerInstance : public BufferPoolManager {
    */
   void ValidatePageId(page_id_t page_id) const;
 
-  frame_id_t ReplacePageLocked(page_id_t page_id, Page** new_page);
+  frame_id_t ReplacePageLocked(Page **new_page);
 
   /** Number of pages in the buffer pool. */
   const size_t pool_size_;
