@@ -15,16 +15,33 @@
 namespace bustub {
 
 ParallelBufferPoolManager::ParallelBufferPoolManager(size_t num_instances, size_t pool_size, DiskManager *disk_manager,
-                                                     LogManager *log_manager) {
+                                                     LogManager *log_manager) 
+    : num_instances_(num_instances),
+      pool_size_(pool_size) {
   // Allocate and create individual BufferPoolManagerInstances
+
+  buffer_pool_list_ = new BufferPoolManagerInstance*[num_instances];
+  for (size_t i = 0; i < num_instances; i++)
+  {
+    buffer_pool_list_[i] = new BufferPoolManagerInstance(pool_size,num_instances,i,disk_manager,log_manager);
+  }
+  
 }
 
 // Update constructor to destruct all BufferPoolManagerInstances and deallocate any associated memory
-ParallelBufferPoolManager::~ParallelBufferPoolManager() = default;
+ParallelBufferPoolManager::~ParallelBufferPoolManager() {
+  for (size_t i = 0; i < num_instances_; i++)
+  {
+    delete buffer_pool_list_[i];
+  }
+
+  delete[] buffer_pool_list_;
+  
+};
 
 size_t ParallelBufferPoolManager::GetPoolSize() {
   // Get size of all BufferPoolManagerInstances
-  return 0;
+  return pool_size_;
 }
 
 BufferPoolManager *ParallelBufferPoolManager::GetBufferPoolManager(page_id_t page_id) {
