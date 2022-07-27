@@ -41,7 +41,7 @@ bool HASH_TABLE_BUCKET_TYPE::Insert(KeyType key, ValueType value, KeyComparator 
     if (!IsReadable(i))
     {
       if(insert_idx == -1) {insert_idx = i;}
-      continue;
+      break;
     }
 
     if (cmp(key,array_[i].first) == 0 && value == array_[i].second)
@@ -51,6 +51,8 @@ bool HASH_TABLE_BUCKET_TYPE::Insert(KeyType key, ValueType value, KeyComparator 
   }
 
   array_[insert_idx] = MappingType(key,value);
+  SetReadable(insert_idx);
+  SetOccupied(insert_idx);
   return true;
 }
 
